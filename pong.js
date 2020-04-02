@@ -334,8 +334,8 @@ canvas.addEventListener("click", function(click) {
     + "to tell me about it."
     + "\n\n"
     + "Press ok if you'll do it 8]")) {
-      const alertMessage = "Mailto could don't work in DCoder. "
-      + "So, here you have my mail in your clipboard :)"
+      const alertMessage = "In case mailto won't work, "
+      + "here you have my mail in your clipboard :)"
       + "\n\npluizoncv@gmail.com";
       alert(alertMessage);
       
