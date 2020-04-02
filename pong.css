@@ -1,0 +1,8 @@
+/* this one is to don't have any border,
+   only the canvas in the screen, you won't
+   need another thing 8]
+*/
+* {
+  padding: 0;
+  margin: 0;
+}
