@@ -37,6 +37,8 @@
 #### R (the right one):
 ###### It restarts the game. If you want another difficulty level, or you want to play with someone (or you were already playing with someone and now you'll play alone), just press this R buttom 8]
 
+#### Also availables in the keyboard as the i, R and enter buttoms
+
 ---------------------------------------------------------
 
 ## UPDATES
