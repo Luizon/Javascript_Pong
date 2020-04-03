@@ -20,14 +20,14 @@
 		* touch
 		* mouse
 ###### 2 players mode:
-		Move the bottom player with:
-			* arrow keys
-			* touch (in the bottom half of the screen)
-			* mouse
-		
-		Move the top player with:
-			* A and D keys
-			* touch (in the top half of the screen)
+	Move the bottom player with:
+		* arrow keys
+		* touch (in the bottom half of the screen)
+		* mouse
+	
+	Move the top player with:
+		* A and D keys
+		* touch (in the top half of the screen)
 
 ### Screen buttoms
 #### i (the left one):
