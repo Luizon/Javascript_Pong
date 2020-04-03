@@ -1,7 +1,7 @@
 # Javascript Pong
 
 
-[<span style="font-size: 2em;"><b>Try online</b></span>](https://luizon.github.io/Javascript_Pong)
+[<b>Try online</b>](https://luizon.github.io/Javascript_Pong)
 
 ---------------------------------------------------------
 
