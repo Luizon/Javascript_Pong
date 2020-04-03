@@ -6,26 +6,29 @@ var draw; // the canvas context
 var width; // the game width
 var height; // the game height
 var playerHeight; // a default player height
-var pause;
-var hudFont;
-var difficulty;
+var pause; // the pause's flag
+var hudFont; // the font of both player scores
+var difficulty; // a number from 1 to 10
+var arrowLeft, arrowRight, enter, aKey, dKey; // keys' flags
+var players; // this changes to 2 if you select the 2 players mode
 function declareVariables() {
   draw = canvas.getContext("2d");
   width = document.documentElement.clientWidth;
-  height = document.documentElement.clientHeight;  
+  height = document.documentElement.clientHeight;
   playerHeight = height*5/100;
   canvas.width = width;
   canvas.height = height;
   pause = true;
   hudFont = playerHeight*2 + "px Arial"
+  difficulty = 5;
 }
 
 //===========================
 // INSTANCING OBJECTS
 //===========================
 // game objects
-var CPU;
-var user;
+var player1; // CPU, if the user is playing alone
+var player2;
 var ball;
 // json's
 var pauseButton;
@@ -40,7 +43,7 @@ var Player = function(json) {
   this.width = json.width ||  width/5;
   this.x = width/2 - this.width/2;
   this.y = json.y || null;
-  this.maxSpeed = json.maxSpeed || width/100;
+  this.maxSpeed = json.maxSpeed || width/200;
   this.score = 0;
   this.color = json.color || "#000";
   this.initialX = this.x;
@@ -54,17 +57,18 @@ class Ball {
     this.vspeed = json.vspeed || 0;
     this.speed = json.speed || width/100;
     this.initialSpeed = json.initialSpeed || height/100;
-    this.maxSpeed = json.maxSpeed || width/5;
+    this.maxSpeed = json.maxSpeed || width/15;
     this.speeder = json.speeder || .002;
     this.color = "#FFF";
   }
-  
+
   move() {
     // move the ball
     this.x+= this.hspeed;
     this.y+= this.vspeed;
     // increase the ball's speed
-    this.speed+= this.speeder;
+    if(this.speed < this.maxSpeed)
+      this.speed+= this.speeder;
     // if the ball collides with something
     // the walls
     if(this.x <= this.radius)
@@ -72,60 +76,60 @@ class Ball {
     else if(this.x+this.radius >= width)
       this.hspeed = -Math.abs(this.hspeed);
     // the players
-    if(collides(this.getRect(), CPU))
-      this.playerCollision(CPU);
-    if(collides(this.getRect(), user))
-      this.playerCollision(user);
-      
+    if(collides(this.getRect(), player1))
+      this.playerCollision(player1);
+    if(collides(this.getRect(), player2))
+      this.playerCollision(player2);
+
     if(this.y < 0) {
-      user.score++;
+      player2.score++;
       pause = true;
       this.resetBall();
     }
     else if(this.y > height) {
-      CPU.score++;
+      player1.score++;
       pause = true;
       this.resetBall();
     }
   }
-  
+
   playerCollision(player) {
     if((this.y>height/2 && this.vspeed<0)
     || (this.y<height/2 && this.vspeed>0))
       return;
-    //this.vspeed = (this.y>height/2?-1:1)*Math.abs(this.vspeed);
     let dir = this.y>height/2?1:-1;
     this.hspeed = this.turn(player);
     this.vspeed = -dir*(this.speed - Math.abs(this.hspeed));
   }
-  
+
   // not my best idea this method, but it works
   turn(player) {
     let dx = this.x - player.x;
     let section = player.width/8;
+    let falseError = (Math.random()>.5?1:-1)*Math.random();
     if(dx <= section) // full left
-      return -this.speed/4*3;
+      return -this.speed/4*3 + falseError;
     if(dx <= section*2) // half left
-      return -this.speed/2;
+      return -this.speed/2 + falseError;
     if(dx <= section*3) // small left
-      return -this.speed/4;
+      return -this.speed/4 + falseError;
     if(dx <= section*5) // middle
-      return this.hspeed;
+      return this.hspeed + falseError;
     if(dx <= section*6) // small right
-      return this.speed/4;
+      return this.speed/4 + falseError;
     if(dx <= section*7) // half right
-      return this.speed/2;
-    return this.speed/4*3; // full right
+      return this.speed/2 + falseError;
+    return this.speed/4*3 + falseError; // full right
   }
-  
+
   resetBall() {
     this.y=height/2;
     this.x=width/2;
-    CPU.x = CPU.initialX;
+    player1.x = player1.initialX;
     this.startMoving(this.initialSpeed);
     render();
   }
-  
+
   getRect() {
     return {
       x: this.x-this.radius,
@@ -134,28 +138,32 @@ class Ball {
       height: this.radius*2,
     };
   }
-  
+
   startMoving(newSpeed) {
     this.speed = newSpeed;
     let side = (Math.random()>.5?1:-1);
     this.hspeed = side*(Math.random()*newSpeed - 2);
     this.vspeed = newSpeed - Math.abs(this.hspeed);
   }
+  
+  setSpeedAndSpeeder(difficulty) {
+    ball.speeder = (2+difficulty/3)/100;
+    ball.maxSpeed = width/75*(2+difficulty/3);
+  }
 }
 
 function initializeObjects() {
   // game objects
-  CPU = new Player({
+  player1 = new Player({
     x: width/2 - width/10,
     y: playerHeight*2,
-    maxSpeed: width/200,
   });
-  user = new Player({
+  player2 = new Player({
     x: 0,
     y: height - playerHeight*3,
   });
   ball = new Ball({})
-  
+
   // json's
   let d = width<height?(width/3):(height/3);
   pauseButton = {
@@ -204,7 +212,7 @@ function drawLine(x1, y1, x2, y2) {
 function drawPanel() {
   draw.fillStyle = "#082";
   draw.fillRect(0, 0, canvas.width, canvas.height);
-  
+
   draw.fillStyle = "#000";
   drawLine(0, height/2, width, height/2);
 }
@@ -225,7 +233,7 @@ function drawPauseButton() {
     radius: p.radius,
     color: p.color,
   });
-  
+
   draw.fillStyle = pauseButton.innerColor;
   if(!pause) {
     let aux = pauseButton;
@@ -260,7 +268,7 @@ function drawSmallButton(json) {
     radius: json.radius,
     color: json.color,
   });
-  
+
   draw.fillStyle = json.innerColor;
   draw.font = json.font;
   draw.fillText(json.innerText, json.x+json.radius/2, json.y+json.radius/3*5);
@@ -268,16 +276,16 @@ function drawSmallButton(json) {
 function drawScores() {
   draw.fillStyle = "#000";
   draw.font = hudFont;
-  draw.fillText(CPU.score, width/2, CPU.height*1.9);
-  draw.fillText(user.score, width/2, height-user.height/10);
+  draw.fillText(player1.score, width/2, player1.height*1.9);
+  draw.fillText(player2.score, width/2, height-player2.height/10);
 }
 
 // this one draws everything
 function render() {
   drawPanel();
   draw.fillStyle = "#000";
-  drawRect(CPU);
-  drawRect(user);
+  drawRect(player1);
+  drawRect(player2);
   drawPauseButton();
   drawSmallButton(restartButton);
   drawSmallButton(infoButton);
@@ -285,32 +293,63 @@ function render() {
   drawCircle(ball);
 }
 
-
 //===========================
 // JS EVENTS
 //===========================
 // mouse move event, if the user have a mouse
 canvas.addEventListener("mousemove", function(mouse) {
-
   if(pause)
     return;
-  let actualX = mouse.x-user.width/2;
-  let maxX = width-user.width;
-  user.x = Math.min(Math.max(0, actualX), maxX);
+  let actualX = mouse.x-player2.width/2;
+  let maxX = width-player2.width;
+  player2.x = Math.min(Math.max(0, actualX), maxX);
 });
 
 // touch event, for the touch screen users
 canvas.addEventListener("touchmove", function(touch) {
-
   if(pause)
     return;
-  var touchItSelf = touch.changedTouches[0];
-  var touchX = parseInt(touchItSelf.clientX);
+  var touchItSelf1 = touch.changedTouches[0];
+  var touchItSelf2 = "none";
+  if(touch.changedTouches.length > 1)
+    touchItSelf2 = touch.changedTouches[1];
+  var touch1 = {
+    x : parseInt(touchItSelf1.clientX),
+    y : parseInt(touchItSelf1.clientY),
+  };
+  var touch2 = {x: 0, y: 0};
+  if(touchItSelf2 != "none")
+  touch2 = {
+    x : parseInt(touchItSelf2.clientX),
+    y : parseInt(touchItSelf2.clientY),
+  };
   touch.preventDefault();
   
-  let actualX = touchX-user.width/2;
-  let maxX = width-user.width;
-  user.x = Math.min(Math.max(0, actualX), maxX);
+  let maxX = width-player1.width;
+  // if the user playing the 2 players mode
+  if(players > 1) {
+    if(touch1.y < height/2) { // if the first touch is on the top
+      let x1 = touch1.x-player1.width/2;
+      player1.x = Math.min(Math.max(0, x1), maxX);
+      if(touchItSelf2 != "none") { // if there's only one touch detected, only one player is moved
+        let x2 = touch2.x-player2.width/2;
+        player2.x = Math.min(Math.max(0, x2), maxX);
+      }
+    }
+    else { // if the first touch is on the bottom
+      let x1 = touch1.x-player2.width/2;
+      player2.x = Math.min(Math.max(0, x1), maxX);
+      if(touchItSelf2 != "none") { // if there's only one touch detected, only one player is moved
+        let x2 = touch2.x-player1.width/2;
+        player1.x = Math.min(Math.max(0, x2), maxX);
+      }
+    }
+  }
+  else {
+    // if the user is playing alone
+    let actualX = touch1.x - player2.height/2;
+    player2.x = Math.min(Math.max(0, actualX), maxX);
+  }
 });
 
 // single click event (works with touch and mouse)
@@ -325,55 +364,46 @@ canvas.addEventListener("click", function(click) {
     return;
   }
   if(pointCollision(click.x, click.y, infoButton)) {
-    pause = true;
-    if(confirm("A classic Pong game"
-    + "\nMade by: P_Luizon"
-    + "\n\nCurrent difficulty: " + difficulty
-    + "\n\n"
-    + "If you find any bug feel free "
-    + "to tell me about it."
-    + "\n\n"
-    + "Press ok if you'll do it 8]")) {
-      const alertMessage = "In case mailto won't work, "
-      + "here you have my mail in your clipboard :)"
-      + "\n\npluizoncv@gmail.com";
-      alert(alertMessage);
-      
-      // doing weird things to copy to clipboard
-      const txtArea = document.createElement('textarea');
-      txtArea.value = "pluizoncv@gmail.com";
-      document.body.appendChild(txtArea);
-      txtArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(txtArea);
-      
-      // trying to redirect the user to the mail thing
-      var mailMessage = "Hey dude, I found some things you have to fix in that pong you did in DCoder.";
-      var subject = "Fix this bugs from your DCoder Pong, folk";
-      //document.location.href = "mailto:pluizoncv@gmail.com";
-      document.location.href = "mailto:pluizoncv@gmail.com?"
-      + "subject=" + encodeURIComponent(subject)
-      + "&body=" + encodeURIComponent(mailMessage);
-      /**/
-    }
+    info();
     return;
   }
 });
 
 // key events, if the user have a keyboard
 window.addEventListener("keydown", function(key) {
-  if(key.key == "enter")
+  if(key.key == "Enter" && !enter) {
     pause = !pause;
-  if(pause)
+    enter = true;
+  }
+  if(key.key == "R" || key.key == "r") {
+    restartGame();
     return;
-  let maxX = width-user.width;
-  let sign = 0;
+  }
+  if(key.key == "I" || key.key == "i") {
+    info();
+    return;
+  }
+  if(key.key == "ArrowRight" && !arrowRight)
+    arrowRight = true;
+  if(key.key == "ArrowLeft" && !arrowLeft)
+    arrowLeft = true;
+  if((key.key == "A" || key.key == "a") && !aKey)
+    aKey = true;
+  if((key.key == "D" || key.key == "d")  && !dKey)
+    dKey = true;
+});
+
+window.addEventListener("keyup", function(key) {
+  if(key.key == "Enter")
+    enter = false;
   if(key.key == "ArrowRight")
-    sign = 1;
-  else if(key.key == "ArrowLeft")
-    sign = -1;
-  if(sign != 0) // if you don't press left or rigth, it ain't gonna happen a thing
-    user.x = Math.min(Math.max(0, user.x+sign*width/30), maxX);
+    arrowRight = false;
+  if(key.key == "ArrowLeft")
+    arrowLeft = false;
+  if(key.key == "A" || key.key == "a")
+    aKey = false;
+  if(key.key == "D" || key.key == "d")
+    dKey = false;
 });
 
 //===========================
@@ -382,11 +412,11 @@ window.addEventListener("keydown", function(key) {
 function collides(obj1, obj2) {
   let x11 = obj1.x,
     y11 = obj1.y,
-    x12 = obj1.x + obj1.width, 
+    x12 = obj1.x + obj1.width,
     y12 = obj1.y + obj1.height,
-    x21 = obj2.x, 
-    y21 = obj2.y, 
-    x22 = obj2.x + obj2.width, 
+    x21 = obj2.x,
+    y21 = obj2.y,
+    x22 = obj2.x + obj2.width,
     y22 = obj2.y + obj2.height;
   if((x11 >= x21 && x11 <= x22)
   || (x12 >= x21 && x12 <= x22)) {
@@ -408,17 +438,64 @@ function pointCollision(x, y, rect) {
 function restartGame() {
   pause = true;
   ball.resetBall();
-  CPU.score = 0;
-  user.score = 0;
+  player1.score = 0;
+  player2.score = 0;
   render();
-  setDifficulty();
+  setMode();
+}
+
+function info() {
+  pause = true;
+  if(confirm("A classic Pong game"
+  + "\nMade by: P_Luizon"
+  + "\n\nCurrent difficulty: " + difficulty
+  + "\n\n"
+  + "If you find any bug feel free "
+  + "to tell me about it."
+  + "\n\n"
+  + "Press ok if you'll do it 8]")) {
+    const alertMessage = "In case mailto won't work, "
+    + "here you have my mail in your clipboard :)"
+    + "\n\npluizoncv@gmail.com";
+    alert(alertMessage);
+
+    // doing weird things in order to copy to clipboard
+    const txtArea = document.createElement('textarea');
+    txtArea.value = "pluizoncv@gmail.com";
+    document.body.appendChild(txtArea);
+    txtArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(txtArea);
+
+    // trying to redirect the user to the mail thing
+    var mailMessage = "Hey dude, I found some things you have to fix in that pong you did in DCoder.";
+    var subject = "Fix this bugs from your DCoder Pong, folk";
+    document.location.href = "mailto:pluizoncv@gmail.com?"
+    + "subject=" + encodeURIComponent(subject)
+    + "&body=" + encodeURIComponent(mailMessage);
+  }
+}
+
+function setMode() {
+    let message = "Do you wan't to play alone? ignore this message if you do, "
+    + "but click on OK if you want to play the 2 players mode :)";
+    players = 1;
+    if(confirm(message)) {
+        players = 2;
+        ball.setSpeedAndSpeeder(1);
+    }
+    else
+      setDifficulty();
 }
 
 function setDifficulty() {
   let message = "Put a number from 1 to 10, "
   + "will be the level of difficulty of the game :)";
-  let d = prompt(message, "1 - 10");
-  
+  let d = "5";
+  let answer = prompt(message, "5");
+  if(typeof answer != undefined && answer !== null)
+    d = answer;
+
   let itLooksLikeAnIntegerNumber = true;
   for(let i=0; i<Math.min(2, d.length); i++) {
     if(!"1234567890".includes(d[i])) {
@@ -429,7 +506,7 @@ function setDifficulty() {
       break;
     }
   }
-  
+
   if(itLooksLikeAnIntegerNumber) {
     message = "";
     let messageDone = false;
@@ -463,12 +540,11 @@ function setDifficulty() {
     }
     alert(message);
   }
-  
-  ball.speeder = (2+difficulty/3)/100;
-  CPU.maxSpeed = width/400*difficulty;
-  
+
+  ball.setSpeedAndSpeeder(difficulty);
+  player1.maxSpeed = width/400*difficulty;
+
   console.log("Current dificulty level: " + difficulty);
-  /**/
 }
 
 //===========================
@@ -479,17 +555,41 @@ function loop() {
     return;
   // ball
   ball.move();
-  
+
+  ////////////////// players //////////////////
+  let sign = 0;
+  let maxX = width - player1.width;
+  let moveSpeed = width/30;
   // CPU
-  let p1x = CPU.x+CPU.width/2;
-  if(p1x < ball.x)
-    CPU.x = Math.min(width-CPU.width,
-      Math.min(CPU.x+CPU.maxSpeed,
-        ball.x-CPU.width/2));
-  else if(p1x > ball.x)
-    CPU.x = Math.max(0,
-      Math.max(CPU.x-CPU.maxSpeed,
-        ball.x-CPU.width/2));
+  if(players == 1) {
+      let p1x = player1.x+player1.width/2;
+      if(p1x < ball.x)
+        player1.x = Math.min(width-player1.width,
+          Math.min(player1.x+player1.maxSpeed,
+            ball.x-player1.width/2));
+      else if(p1x > ball.x)
+        player1.x = Math.max(0,
+          Math.max(player1.x-player1.maxSpeed,
+            ball.x-player1.width/2));
+  }
+  else // player1
+  {
+    if(aKey)
+      sign--;
+    if(dKey)
+      sign++;
+    if(sign!=0)
+      player1.x = Math.min(Math.max(0, player1.x+sign*moveSpeed), maxX);
+  }
+
+  // player2
+  sign = 0;
+  if(arrowLeft)
+    sign--;
+  if(arrowRight)
+    sign++;
+  if(sign!=0)
+    player2.x = Math.min(Math.max(0, player2.x+sign*moveSpeed), maxX);
 }
 
 //===========================
@@ -512,7 +612,7 @@ var lastTick, lastRender, tickLength
     window.requestAnimationFrame( main );
     var nextTick = lastTick + tickLength;
     var numTicks = 0;
-    
+
     if (frame > nextTick) {
       var timeSinceTick = frame - lastTick;
       numTicks = Math.floor( timeSinceTick / tickLength );
@@ -522,23 +622,23 @@ var lastTick, lastRender, tickLength
     render();
     lastRender = frame;
   }
-  
+
   function queueUpdates( numTicks ) {
     for(var i=0; i < numTicks; i++) {
       lastTick = lastTick + tickLength; //Now lastTick is this tick.
       loop();
     }
   }
-  
+
   lastTick = performance.now();
   lastRender = lastTick; //Pretend the first draw was on first update.
   tickLength = 16; //This sets the game to run at 60Hz (16ms)
-  /**/
+  
   declareVariables();
   initializeObjects();
   render();
   ball.startMoving(ball.initialSpeed);
-  setDifficulty();
+  setMode();
   main(performance.now());
 })();
 
