@@ -1,4 +1,3 @@
-//===========================
 // DECLARING VARIABLES
 //===========================
 var canvas = document.getElementById("canvas"); // the canvas itself
@@ -9,8 +8,9 @@ var playerHeight; // a default player height
 var pause; // the pause's flag
 var hudFont; // the font of both player scores
 var difficulty; // a number from 1 to 10
-var arrowLeft, arrowRight, enter, aKey, dKey; // keys' flags
+var arrowLeft, arrowRight, enter, aKey, dKey, control; // keys' flags
 var players; // this changes to 2 if you select the 2 players mode
+var backgroundColor = "#082";
 function declareVariables() {
   draw = canvas.getContext("2d");
   width = document.documentElement.clientWidth;
@@ -210,7 +210,7 @@ function drawLine(x1, y1, x2, y2) {
   draw.stroke();
 }
 function drawPanel() {
-  draw.fillStyle = "#082";
+  draw.fillStyle = backgroundColor;
   draw.fillRect(0, 0, canvas.width, canvas.height);
 
   draw.fillStyle = "#000";
@@ -274,17 +274,18 @@ function drawSmallButton(json) {
   draw.fillText(json.innerText, json.x+json.radius/2, json.y+json.radius/3*5);
 }
 function drawScores() {
-  draw.fillStyle = "#000";
+  draw.fillStyle = difficulty=="hell 😈"?"#DD0":"#000";
   draw.font = hudFont;
   draw.fillText(player1.score, width/2, player1.height*1.9);
-  draw.fillText(player2.score, width/2, height-player2.height/10);
+  draw.fillText(difficulty!="hell 😈"?player2.score:"😈", width/2, height-player2.height/10);
 }
 
 // this one draws everything
 function render() {
   drawPanel();
-  draw.fillStyle = "#000";
+  draw.fillStyle = player1.color;
   drawRect(player1);
+  draw.fillStyle = player2.color;
   drawRect(player2);
   drawPauseButton();
   drawSmallButton(restartButton);
@@ -375,7 +376,7 @@ window.addEventListener("keydown", function(key) {
     pause = !pause;
     enter = true;
   }
-  if(key.key == "R" || key.key == "r") {
+  if((key.key == "R" || key.key == "r") && !control) { // don't restart the game if you try to refresh the page (because 
     restartGame();
     return;
   }
@@ -383,6 +384,8 @@ window.addEventListener("keydown", function(key) {
     info();
     return;
   }
+  if(key.key == "Control" && !control)
+    control = true;
   if(key.key == "ArrowRight" && !arrowRight)
     arrowRight = true;
   if(key.key == "ArrowLeft" && !arrowLeft)
@@ -394,6 +397,8 @@ window.addEventListener("keydown", function(key) {
 });
 
 window.addEventListener("keyup", function(key) {
+  if(key.key == "Control")
+    control = false;
   if(key.key == "Enter")
     enter = false;
   if(key.key == "ArrowRight")
@@ -477,15 +482,31 @@ function info() {
 }
 
 function setMode() {
-    let message = "Do you wan't to play alone? ignore this message if you do, "
-    + "but click on OK if you want to play the 2 players mode :)";
+    let message = "Do you want to play the 2 players mode? Press OK if you do, "
+    + "ignore this message if you want to play alone :)";
     players = 1;
     if(confirm(message)) {
+		difficulty = "not available in 2 players mode";
         players = 2;
         ball.setSpeedAndSpeeder(1);
+		if(difficulty=="hell 😈") {
+		  deactivateModoDiablo();
+		}
     }
     else
       setDifficulty();
+}
+
+function deactivateModoDiablo() {
+  player1.color = "#000";
+  player2.color = "#000";
+  ball.color = "#FFF";
+  infoButton.color = "#210333";
+  pauseButton.color = "#420666";
+  restartButton.color = "#210333";
+  backgroundColor = "#082";
+  
+  alert("Modo diablo deactived 👿");
 }
 
 function setDifficulty() {
@@ -495,6 +516,32 @@ function setDifficulty() {
   let answer = prompt(message, "5");
   if(typeof answer != undefined && answer !== null)
     d = answer;
+	
+  if(d=="modo diablo") {
+    if(difficulty=="hell 😈") {
+	    alert("Modo diablo is already actived 😈");
+		return;
+	}
+    ball.setSpeedAndSpeeder(.5);
+	ball.maxSpeed = 100;
+    player1.maxSpeed = 10000000000000000;
+	player1.color = "#D66";
+	player2.color = "#D66";
+	ball.color = "#DC0";
+	infoButton.color = "#A00";
+	pauseButton.color = "#D00";
+	restartButton.color = "#A00";
+	backgroundColor = "#774400";
+	difficulty = "hell 😈";
+	
+	alert("Modo diablo activado 😈");
+    return;
+  }
+  else {
+    if(difficulty=="hell 😈") {
+	  deactivateModoDiablo();
+	}
+  }
 
   let itLooksLikeAnIntegerNumber = true;
   for(let i=0; i<Math.min(2, d.length); i++) {
