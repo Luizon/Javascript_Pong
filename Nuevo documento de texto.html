@@ -1,0 +1,46 @@
+<html>
+<!--
+<video
+    title="Advertisement"
+    style="background-color: rgb(0, 0, 0); position: absolute; width: 640px; height: 360px;"
+    src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    autoplay="true"
+    muted="muted"></video>
+	<!---->
+<audio src="Doom_OST_-_E1M1_-_At_Dooms_Gate.mp3" id="m" loop controls allow="autoplay" muted></audio>
+<script>
+var m = document.getElementById("m");
+document.addEventListener("keydown", function(k) {
+	console.log("s");
+	if(k.key == "p") {
+		m.paused?m.play():m.pause();
+	}
+});
+;(
+function() {
+	m.muted = false;
+	var cont = 0;
+	var band = false;
+	while(!band) {
+		band = play();
+		console.log(++cont +"\t"+ band);
+		if(cont>100)
+			break;
+	}
+})();
+
+async function play() {
+	let result = await m.play()
+	if (result !== undefined) {
+	  result.then(_ => {
+		console.log("yes");
+		return true;
+	  }).catch(error => {
+		console.log("no");
+		return false;
+	  });
+	}
+}
+</script>
+<!---->
+</html>

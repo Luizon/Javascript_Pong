@@ -12,8 +12,9 @@ var difficulty; // a number from 1 to 10
 var arrowLeft, arrowRight, enter, aKey, dKey, control; // keys' flags
 var players; // this changes to 2 if you select the 2 players mode
 var backgroundColor = "#082";
-var hellMusic = document.getElementById("hellMusic"); // Doom's song
-var cacodemon = document.getElementById("cacodemon"); // Cacodemon's img
+var hellMusic; // Doom's song
+var cacodemon; // Cacodemon's img
+var songStarted = false;
 function declareVariables() {
   draw = canvas.getContext("2d");
   width = document.documentElement.clientWidth;
@@ -24,6 +25,8 @@ function declareVariables() {
   pause = true;
   hudFont = playerHeight*2 + "px Arial"
   difficulty = 5;
+  cacodemon = document.getElementById("cacodemon");
+  hellMusic = document.getElementById("hellMusic");
 }
 
 //===========================
@@ -526,6 +529,7 @@ function deactivateModoDiablo() {
   backgroundColor = "#082";
   hellMusic.load();
   hellMusic.pause();
+  songStarted = false;
   
   alert("Modo diablo deactived 👿");
 }
@@ -623,6 +627,20 @@ function setDifficulty() {
 // THE LOOP, called every single frame
 //===========================
 function loop() {
+  if(!songStarted && difficulty == "hell 😈") {
+	let promise = hellMusic.play();
+	
+	if (promise !== undefined) {
+	  promise.then(_ => {
+		songStarted = true;
+		console.log("yes");
+	  }).catch(error => {
+		console.log("no");
+	  });
+	}
+
+  }
+//  console.log(hellMusic);
   if(pause)
     return;
   // ball
