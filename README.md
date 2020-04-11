@@ -85,6 +85,12 @@
 	It restarts the game. If you want another difficulty level, or you want to play with someone (or you were already playing with someone and now you'll play alone), just press this R buttom 8]
 </div>
 
+#### Keyboard P button:
+<div style="margin: 0 0 0 1.5em;">
+	Allows you to pause or play the Doom's song when you're playing the modo diablo mode 8]
+</div>
+
+
 ###### Also availables in the keyboard as the <b><i>i</i></b>, <b><i>R</i></b> and <b><i>enter</i></b> buttoms
 
 ---------------------------------------------------------
