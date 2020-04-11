@@ -1,3 +1,4 @@
+//===========================
 // DECLARING VARIABLES
 //===========================
 var canvas = document.getElementById("canvas"); // the canvas itself
