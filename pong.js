@@ -11,7 +11,7 @@ var hudFont; // the font of both player scores
 var difficulty; // a number from 1 to 10
 var arrowLeft, arrowRight, enter, aKey, dKey, control; // keys' flags
 var players; // this changes to 2 if you select the 2 players mode
-var backgroundColor = "#082"; // the background's color
+var backgroundColor = "#082";
 function declareVariables() {
   draw = canvas.getContext("2d");
   width = document.documentElement.clientWidth;
@@ -377,11 +377,11 @@ window.addEventListener("keydown", function(key) {
     pause = !pause;
     enter = true;
   }
-  if((key.key == "R" || key.key == "r") && !control) { // don't restart the game if you try to refresh the page (because 
+  if((key.key == "R" || key.key == "r") && !control) { // don't restart the game if the user try to refresh the page (because 
     restartGame();
     return;
   }
-  if(key.key == "I" || key.key == "i") {
+  if((key.key == "I" || key.key == "i") && !control) { // don't show the information alert if the user try to inspect the game
     info();
     return;
   }
@@ -487,12 +487,12 @@ function setMode() {
     + "ignore this message if you want to play alone :)";
     players = 1;
     if(confirm(message)) {
-		difficulty = "not available in 2 players mode";
         players = 2;
         ball.setSpeedAndSpeeder(1);
 		if(difficulty=="hell 😈") {
 		  deactivateModoDiablo();
 		}
+		difficulty = "not available in 2 players mode";
     }
     else
       setDifficulty();
@@ -535,7 +535,7 @@ function setDifficulty() {
 	backgroundColor = "#774400";
 	difficulty = "hell 😈";
 	
-	alert("Modo diablo activado 😈");
+	alert("Modo diablo activated 😈");
     return;
   }
   else {
