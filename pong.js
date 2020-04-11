@@ -12,6 +12,8 @@ var difficulty; // a number from 1 to 10
 var arrowLeft, arrowRight, enter, aKey, dKey, control; // keys' flags
 var players; // this changes to 2 if you select the 2 players mode
 var backgroundColor = "#082";
+var hellMusic = document.getElementById("hellMusic"); // Doom's song
+var cacodemon = document.getElementById("cacodemon"); // Cacodemon's img
 function declareVariables() {
   draw = canvas.getContext("2d");
   width = document.documentElement.clientWidth;
@@ -214,7 +216,7 @@ function drawPanel() {
   draw.fillStyle = backgroundColor;
   draw.fillRect(0, 0, canvas.width, canvas.height);
 
-  draw.fillStyle = "#000";
+  draw.fillStyle = difficulty == "hell 😈"?"#DD0":"#000";
   drawLine(0, height/2, width, height/2);
 }
 function drawRect(rect) {
@@ -280,6 +282,13 @@ function drawScores() {
   draw.fillText(player1.score, width/2, player1.height*1.9);
   draw.fillText(difficulty!="hell 😈"?player2.score:"😈", width/2, height-player2.height/10);
 }
+function drawBall() {
+  if(difficulty!="hell 😈")
+    drawCircle(ball);
+  else {
+    draw.drawImage(cacodemon, ball.x-ball.radius, ball.y-ball.radius, ball.radius*2, ball.radius*2);
+  }
+}
 
 // this one draws everything
 function render() {
@@ -292,7 +301,7 @@ function render() {
   drawSmallButton(restartButton);
   drawSmallButton(infoButton);
   drawScores();
-  drawCircle(ball);
+  drawBall();
 }
 
 //===========================
@@ -373,6 +382,15 @@ canvas.addEventListener("click", function(click) {
 
 // key events, if the user have a keyboard
 window.addEventListener("keydown", function(key) {
+  if(key.key == "P" || key.key == "p") {
+    if(difficulty =="hell 😈") {
+		if(hellMusic.paused)
+			hellMusic.play();
+		else
+			hellMusic.pause();
+	}
+    return;
+  }
   if(key.key == "Enter" && !enter) {
     pause = !pause;
     enter = true;
@@ -506,6 +524,8 @@ function deactivateModoDiablo() {
   pauseButton.color = "#420666";
   restartButton.color = "#210333";
   backgroundColor = "#082";
+  hellMusic.load();
+  hellMusic.pause();
   
   alert("Modo diablo deactived 👿");
 }
@@ -521,7 +541,8 @@ function setDifficulty() {
 	
   if(d=="modo diablo") {
     if(difficulty=="hell 😈") {
-	    alert("Modo diablo is already actived 😈");
+	    alert("Modo diablo is already actived 😈"
+		+"\nPress \"p\" to pause and play the song 8]");
 		return;
 	}
     ball.setSpeedAndSpeeder(.5);
@@ -535,8 +556,10 @@ function setDifficulty() {
 	restartButton.color = "#A00";
 	backgroundColor = "#774400";
 	difficulty = "hell 😈";
+	hellMusic.play();
 	
-	alert("Modo diablo activated 😈");
+	alert("Modo diablo activated 😈"
+	+"\nPress \"p\" to pause and play the song 8]");
     return;
   }
   else {
