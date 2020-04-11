@@ -512,7 +512,8 @@ function deactivateModoDiablo() {
 
 function setDifficulty() {
   let message = "Put a number from 1 to 10, "
-  + "will be the level of difficulty of the game :)";
+  + "will be the level of difficulty of the game :)"
+  + "\nOr write \"modo diablo\" and see what happen 8]";
   let d = "5";
   let answer = prompt(message, "5");
   if(typeof answer != undefined && answer !== null)
