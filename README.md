@@ -6,34 +6,34 @@
 
 ## Game modes
 ### One player
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	<u>Modo diablo difficulty</u>
-	<div style="margin: 0 0 0 1.5em;">
+	<div>
 		Play with a perfect IA with a ridiculouse, in the hell.
 	</div>
 	<br />
 	<u>1 to 10 level difficulty</u>
-	<div style="margin: 0 0 0 1.5em;">
+	<div>
 		Play the normal mode, with the difficulty level that you like the most.
 	</div>
 </div>
 
 ### Two players
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	Play with someone to see who's better!
 </div>
 <br />
 
 ## Instructions
 #### First message:
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	You pressed ok? You'll play the 2 players mode.
 	<br />
 	You didn't? Second message.
 </div>
 
 #### Second message:
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	<b>Put the level difficult</b>, a number from 1 to 10,
 	or <b>write <i>modo diablo</i></b> to activate the modo diablo difficulty.
 	<br />
@@ -43,9 +43,9 @@
 
 ## Controls
 #### 1 player mode:
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	<u>Move the bottom player with:</u> <br />
-	<div style="margin: 0 0 0 1.5em;">
+	<div>
 		• arrow keys <br />
 		• touch <br />
 		• mouse
@@ -53,16 +53,16 @@
 </div>
 
 #### 2 players mode:
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	<u>Move the bottom player with:</u> <br />
-	<div style="margin: 0 0 0 1.5em;">
+	<div>
 		• arrow keys <br />
 		• touch (in the bottom half of the screen) <br />
 		• mouse <br />
 	</div>
 	<br />
 	<u>Move the top player with:</u> <br />
-	<div style="margin: 0 0 0 1.5em;">
+	<div>
 		• A and D keys <br />
 		• touch (in the top half of the screen)
 	</div>
@@ -71,22 +71,22 @@
 
 ## Screen buttoms
 #### i (the left one):
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	It say a little information about the game, if you want to tell me about a bug you can press here and press ok in the confirm message. You'll have my email in your clipboard and you'll be redirected to a mail app.
 </div>
 
 #### play/stop (the middle one):
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	It's just a pause buttom  8]
 </div>
 
 #### R (the right one):
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	It restarts the game. If you want another difficulty level, or you want to play with someone (or you were already playing with someone and now you'll play alone), just press this R buttom 8]
 </div>
 
 #### Keyboard P button:
-<div style="margin: 0 0 0 1.5em;">
+<div>
 	Allows you to pause or play the Doom's song when you're playing the modo diablo mode 8]
 </div>
 
