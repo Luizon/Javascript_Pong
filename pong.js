@@ -11,7 +11,7 @@ var hudFont; // the font of both player scores
 var difficulty; // a number from 1 to 10
 var arrowLeft, arrowRight, enter, aKey, dKey, control; // keys' flags
 var players; // this changes to 2 if you select the 2 players mode
-var backgroundColor = "#082";
+var backgroundColor = "#082"; // the background's color
 function declareVariables() {
   draw = canvas.getContext("2d");
   width = document.documentElement.clientWidth;
