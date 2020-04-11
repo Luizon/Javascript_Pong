@@ -16,7 +16,7 @@
 			}
 		</style>
 	</head>
-
+	<body>
 # Javascript Pong
 <a href="https://luizon.github.io/Javascript_Pong">Try online</a>
 
@@ -106,5 +106,5 @@
  * Now you can play with someone else!
  * Not selected difficulty level fixed.
  * Modo diablo has been added. An impossible to win level.
-
+	</body>
  </html>
