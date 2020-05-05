@@ -1,5 +1,6 @@
 # Javascript Pong
-<a style="font-size: 4em; font-weight: bold;" href="https://luizon.github.io/Javascript_Pong">Try online</a>
+
+## <a href="https://luizon.github.io/Javascript_Pong">Try online</a>
 
 ---------------------------------------------------------
 <br />
